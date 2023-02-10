@@ -32,7 +32,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	//Тестовый запуск программы
 	var input = "Hey\nMax\n1\n2\n"
 	out, err := lib.RunApp(projectPath+"/tasks/tasks", input)
