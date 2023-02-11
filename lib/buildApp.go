@@ -5,14 +5,14 @@ import (
 	"os/exec"
 )
 
-func BuildGoApp(pathToProj string) (result bool, err error) {
+func BuildGoApp(pathToProj string, folder string) (pathToBin string, err error) {
 	cmd := exec.Command("go", "build")
-	cmd.Dir = pathToProj
+	cmd.Dir = pathToProj + folder
 	output, err := cmd.Output()
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
-	log.Println("Bin has been compiled successfully: ", pathToProj, string(output))
-	return true, nil
+	log.Println("Bin has been compiled successfully: ", pathToProj+folder, string(output))
+	return folder, nil
 }
