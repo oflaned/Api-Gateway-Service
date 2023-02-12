@@ -1,27 +1,29 @@
 package main
 
 import (
-	"Mehmat/lib"
+	"Mehmat/Api/handler"
+	"Mehmat/Api/repository"
+	service "Mehmat/Api/service"
 	"log"
-	"os"
 )
 
-var projectPath string
+func main() {
+	repos := repository.NewRepository()
+	services := service.NewService(repos)
+	handlers := handler.NewHandler(services)
 
-func init() {
-	var err error
-	projectPath, err = os.Getwd()
+	server := new(Server)
+	err := server.Run("8000", handlers.InitRoutes())
 	if err != nil {
-		log.Fatal("Project path can't be declared")
+		log.Fatal("Server are not running")
 	}
-	log.Println("Project Path: ", projectPath)
+
 }
 
-func main() {
-
+/*
 	//Тестовый билд программы
 	var binFolder = "/tasks"
-	_, err := lib.BuildGoApp(projectPath, binFolder)
+	_, err = lib.BuildGoApp(projectPath, binFolder)
 	if err != nil {
 		log.Println(err)
 	}
@@ -34,5 +36,4 @@ func main() {
 	} else {
 		log.Println(out)
 	}
-
-}
+*/
