@@ -18,7 +18,7 @@ func NewCompileService() *CompileService {
 
 func (s *CompileService) RunProgram(program structs.Program) (out string, err error) {
 
-	//Chose a format of file which we will use
+	//Chose a format of file which will used
 	var format string
 	if program.Language == "c++" {
 		format = "cpp"
@@ -29,7 +29,7 @@ func (s *CompileService) RunProgram(program structs.Program) (out string, err er
 	}
 
 	//Create a temporary file with code
-	codeFile, err := os.CreateTemp("./Temp", "code.*."+format)
+	codeFile, err := os.CreateTemp("../Temp", "code.*."+format)
 	if err != nil {
 		return "", err
 	}
@@ -43,7 +43,7 @@ func (s *CompileService) RunProgram(program structs.Program) (out string, err er
 		return "", err
 	}
 
-	//compile file
+	//Compile file
 	var compiler string
 	var flags []string
 	if format == "cpp" {

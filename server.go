@@ -1,9 +1,12 @@
-package main
+package OnlineCompiler
+
+import (
+	"net/http"
+	"time"
+)
 
 import (
 	"context"
-	"net/http"
-	"time"
 )
 
 type Server struct {
