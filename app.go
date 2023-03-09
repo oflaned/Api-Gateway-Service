@@ -2,22 +2,31 @@ package main
 
 import (
 	"Mehmat/Api/handler"
-	"Mehmat/Api/repository"
-	service "Mehmat/Api/service"
+	"Mehmat/Api/service"
+	"github.com/spf13/viper"
 	"log"
 )
 
 func main() {
-	repos := repository.NewRepository()
-	services := service.NewService(repos)
+	err := initConfig()
+	if err != nil {
+		log.Fatal("error initialization config")
+	}
+
+	services := service.NewService()
 	handlers := handler.NewHandler(services)
 
 	server := new(Server)
-	err := server.Run("8000", handlers.InitRoutes())
+	err = server.Run(viper.GetString("port"), handlers.InitRoutes())
 	if err != nil {
-		log.Fatal("Server are not running")
+		log.Fatal("Server are not run")
 	}
 
+}
+func initConfig() error {
+	viper.AddConfigPath("configs")
+	viper.SetConfigName("config")
+	return viper.ReadInConfig()
 }
 
 /*

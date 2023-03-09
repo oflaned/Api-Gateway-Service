@@ -1,18 +1,18 @@
 package service
 
-import "Mehmat/Api/repository"
+import "Mehmat/structs"
 
-type Authorization interface {
-}
-
-type Task interface {
+type CompileProgram interface {
+	RunProgram(program structs.Program) (out string, err error)
+	//CheckProgram(program structs.Program) (check bool, err error)
 }
 
 type Service struct {
-	Authorization
-	Task
+	CompileProgram
 }
 
-func NewService(repos *repository.Repository) *Service {
-	return &Service{}
+func NewService() *Service {
+	return &Service{
+		CompileProgram: NewCompileService(),
+	}
 }
