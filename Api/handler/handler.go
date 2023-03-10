@@ -16,8 +16,13 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 	router.LoadHTMLGlob("../templates/**/*")
+
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+
 	program := router.Group("/task")
 	{
+		program.GET("/", h.Program)
 		program.POST("/send", h.Compile)
 	}
 

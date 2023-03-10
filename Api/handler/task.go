@@ -3,15 +3,17 @@ package handler
 import (
 	"Mehmat/structs"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
 func (h *Handler) Compile(c *gin.Context) {
 	code := c.PostForm("code")
 	lang := c.PostForm("lang")
-	stdIn := c.PostForm("stdIn")
+	input := c.PostForm("input")
 
 	if code == "" {
+		log.Print("Code is empty")
 		c.HTML(http.StatusBadRequest, "err.tmpl", gin.H{
 			"status":  http.StatusBadRequest,
 			"message": "Code is empty",
@@ -19,6 +21,7 @@ func (h *Handler) Compile(c *gin.Context) {
 		return
 	}
 	if lang == "" {
+		log.Print("Lang is empty")
 		c.HTML(http.StatusBadRequest, "err.tmpl", gin.H{
 			"status":  http.StatusBadRequest,
 			"message": "Lang is empty",
@@ -26,10 +29,11 @@ func (h *Handler) Compile(c *gin.Context) {
 		return
 	}
 
-	program := structs.Program{Code: code, Language: lang, StdIn: stdIn}
+	program := structs.Program{Code: code, Language: lang, StdIn: input}
 	out, err := h.services.CompileProgram.RunProgram(program)
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "err.tmpl", gin.H{
+		log.Print(err)
+		c.HTML(http.StatusInternalServerError, "err.tmpl", gin.H{
 			"status":  http.StatusInternalServerError,
 			"message": "Server Error",
 		})
@@ -37,4 +41,8 @@ func (h *Handler) Compile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": &out})
+}
+
+func (h *Handler) Program(c *gin.Context) {
+	c.HTML(http.StatusOK, "program.tmpl", gin.H{})
 }
