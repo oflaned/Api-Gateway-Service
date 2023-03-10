@@ -22,7 +22,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	program := router.Group("/task")
 	{
-		program.GET("/", h.Program)
+		program.GET("/send", h.Program)
 		program.POST("/send", h.Compile)
 	}
 
