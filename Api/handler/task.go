@@ -40,7 +40,7 @@ func (h *Handler) Compile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": &out})
+	c.String(http.StatusOK, out)
 }
 
 func (h *Handler) Program(c *gin.Context) {
