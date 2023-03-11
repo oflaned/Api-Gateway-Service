@@ -1,4 +1,4 @@
-package OnlineCompiler
+package main
 
 import (
 	"net/http"
