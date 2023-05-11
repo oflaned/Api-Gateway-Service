@@ -3,18 +3,17 @@ package main
 import (
 	"Mehmat/Api/handler"
 	"Mehmat/Api/service"
-	"Mehmat/lib"
-	"github.com/spf13/viper"
+	"Mehmat/config"
+	"Mehmat/utils"
 	"log"
 )
 
 func main() {
-	err := initConfig()
-	if err != nil {
-		log.Fatal("error while initialization config")
-	}
+	cfg := config.GetConfig()
 
-	dep, err := lib.CheckDependencies()
+	log.Println(cfg.Port)
+
+	dep, err := utils.CheckDependencies()
 	if err != nil {
 		log.Fatalf("dependency %s not found: %v", dep, err)
 	}
@@ -23,15 +22,9 @@ func main() {
 	handlers := handler.NewHandler(services)
 
 	server := new(Server)
-	err = server.Run(viper.GetString("port"), handlers.InitRoutes())
+	err = server.Run(cfg.Port, handlers.InitRoutes())
 	if err != nil {
 		log.Fatal("Server are not run")
 	}
 
-}
-
-func initConfig() error {
-	viper.AddConfigPath("./configs")
-	viper.SetConfigName("config")
-	return viper.ReadInConfig()
 }

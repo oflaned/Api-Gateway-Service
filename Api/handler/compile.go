@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"Mehmat/lib"
+	"Mehmat/utils"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -33,7 +33,7 @@ func (h *Handler) Compile(c *gin.Context) {
 		return
 	}
 
-	if lib.BannedFunctions(code, bannedFunctions) {
+	if utils.BannedFunctions(code, bannedFunctions) {
 		log.Print("Used of banned functions is not allowed")
 		c.String(http.StatusOK, "error: Used banned functions \n")
 		return
