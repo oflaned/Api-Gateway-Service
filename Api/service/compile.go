@@ -1,14 +1,10 @@
 package service
 
 import (
-	"Mehmat/structs"
 	"bytes"
-	"errors"
-	"io"
+	"io/ioutil"
 	"log"
-	"os"
-	"os/exec"
-	"strings"
+	"net/http"
 )
 
 type CompileService struct {
@@ -20,71 +16,26 @@ func NewCompileService() *CompileService {
 
 const dir = "./Temp"
 
-func (s *CompileService) RunProgram(program structs.Program) (out string, err error) {
-	lang := strings.ToLower(program.Language)
-	format, compiler, flags := "", "", []string{}
-
-	//Chose a format of file which will used
-	switch lang {
-	case "c++":
-		format = "cpp"
-		compiler = "g++"
-		flags = []string{"-o", "program"}
-	case "go":
-		format = "go"
-		compiler = "go"
-		flags = []string{"build", "-o", "program"}
-	default:
-		return "", errors.New("unknown language")
-	}
-
-	//Create temp file
-	codeFile, err := os.CreateTemp(dir, "code.*."+format)
+func (s *CompileService) RunProgram(program []byte) (out string) {
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", "http://localhost:1212/compile", bytes.NewBuffer(program))
 	if err != nil {
-		return "", err
+		log.Print(err)
+		return "error: Server Error\n"
 	}
-	defer os.Remove(codeFile.Name())
-
-	if _, err = codeFile.WriteString(program.Code); err != nil {
-		return "", err
-	}
-	if err = codeFile.Close(); err != nil {
-		return "", err
-	}
-
-	flags = append(flags, codeFile.Name())
-
-	//Build Program
-	cmd := exec.Command(compiler, flags...)
-	err = cmd.Run()
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := client.Do(req)
 	if err != nil {
-		log.Printf("Error building program: %v", err)
-		return "", err
+		log.Print(err)
+		return "error: Server Error\n"
 	}
+	defer resp.Body.Close()
 
-	//Run Program
-	cmd = exec.Command("./program")
-
-	cmd.Stdin = bytes.NewBufferString(program.StdIn)
-	output, err := cmd.StdoutPipe()
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		log.Print(err)
+		return "error: Server Error\n"
 	}
 
-	if err := cmd.Start(); err != nil {
-		return "", err
-	}
-
-	outputBytes, err := io.ReadAll(output)
-	if err != nil {
-		return "", err
-	}
-
-	err = cmd.Wait()
-	if err != nil {
-		log.Printf("Error running program: %v", err)
-		return "", err
-	}
-
-	return string(outputBytes), nil
+	return string(body)
 }

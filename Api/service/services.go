@@ -1,9 +1,7 @@
 package service
 
-import "Mehmat/structs"
-
 type CompileProgram interface {
-	RunProgram(program structs.Program) (out string, err error)
+	RunProgram(program []byte) (out string)
 	//CheckProgram(program structs.Program) (check bool, err error)
 }
 
