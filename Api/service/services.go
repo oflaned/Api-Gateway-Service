@@ -1,16 +1,19 @@
 package service
 
+import "Mehmat/model/program"
+
 type CompileProgram interface {
 	RunProgram(program []byte) (out string)
-	//CheckProgram(program structs.Program) (check bool, err error)
 }
 
 type Service struct {
+	program.Repository
 	CompileProgram
 }
 
-func NewService() *Service {
+func NewService(rep program.Repository) *Service {
 	return &Service{
 		CompileProgram: NewCompileService(),
+		Repository:     rep,
 	}
 }

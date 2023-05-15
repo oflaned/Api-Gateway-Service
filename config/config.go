@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
-	"log"
 	"sync"
 )
 
@@ -27,8 +26,7 @@ func GetConfig() *Config {
 	once.Do(func() {
 		instance = &Config{}
 		if err := cleanenv.ReadConfig("config.yaml", instance); err != nil {
-			help, _ := cleanenv.GetDescription(instance, nil)
-			log.Println(help)
+			cleanenv.GetDescription(instance, nil)
 		}
 	})
 	return instance

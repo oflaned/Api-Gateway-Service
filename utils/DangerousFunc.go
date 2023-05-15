@@ -6,7 +6,6 @@ import (
 )
 
 func BannedFunctions(programCode string, bannedFunctions string) bool {
-	// Разбиваем программный код на отдельные слова
 	words := strings.Fields(programCode)
 	banned := strings.Fields(bannedFunctions)
 
