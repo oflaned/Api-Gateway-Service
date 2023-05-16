@@ -19,12 +19,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	program := router.Group("/task")
+	compiler := router.Group("/online-compiler")
 	{
-		program.GET("/send", h.Program)
-		program.POST("/send", h.Compile)
+		compiler.GET("", h.Program)
+		compiler.POST("/send", h.Compile)
 	}
-
+	programsList := router.Group("/programs")
+	{
+		programsList.GET("", h.ProgramsList)
+		programsList.POST("/send", h.AddProgram)
+	}
 	return router
 
 }

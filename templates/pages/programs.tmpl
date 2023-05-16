@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Квадраты и форма</title>
+    <style>
+        .title {
+            background-color: #1c2333;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 5px;
+        }
+        .main-container {
+            background-color: #0f1524;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+        }
+        .block {
+            display: inline-block;
+            width: 48%;
+            font-size: 16px;
+            resize: none;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            background-color: #1d2331;
+            height: 100%;
+            margin-top: 10px;
+            margin-bottom: 10px;
+
+        }
+        .textarea {
+            color: white;
+            font-size: 16px;
+            resize: none;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            background-color: #1d2331;
+            width: 100%;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 24px;
+            color: wheat;
+        }
+        *,
+        *:before,
+        *:after {
+            box-sizing: border-box;
+        }
+        h1 {
+            background-color: #1c2333;
+            color: #fff;
+            padding: 10px;
+            margin: 0;
+        }
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 0;
+        }
+        p {
+            margin: 0;
+            padding: 0;
+        }
+        label {
+            color: #fff;
+            padding: 2px;
+            border-radius: 3px;
+            margin: 4px;
+        }
+        input[type="submit"] {
+            background-color: mintcream;
+            border: none;
+            color: #333;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 24px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        select {
+            text-align: center;
+            background-position: right center;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 250px;
+            margin: 5px;
+            height: 2.5rem;
+            font-size: 1rem;
+            color: #333;
+        }
+        button {
+            background-color: mintcream;
+            border: none;
+            color: #333;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 24px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        button:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+        .popup {
+            display: inline-block;
+            padding: 5px;
+            width: 25%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            position: fixed;
+            top: 15%;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .popup.show {
+            opacity: 1;
+            transform: translateX(-20%) translateY(0);
+            right: 20px;
+
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            transition: opacity 0.3s ease;
+
+        }
+
+        .modal-content {
+            margin: 15% auto;
+            width: 70%;
+            height: 65%;
+            background-color: #0f1524;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            transform: translateY(-50px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .fade-out {
+            opacity: 0;
+        }
+
+        .modal-content.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+
+</head>
+<body>
+<div class="title">
+    <h1>Программы</h1>
+</div>
+<div class="main-container">
+    <button onclick="location.href='/online-compiler'">Онлайн компилятор</button>
+    <button onclick="location.href='/programs'">Антиплагиат кода</button>
+</div>
+<div class="main-container">
+{{range .blocks}}
+    <div class="block">
+            <strong>Название:</strong> {{.Name}}<br>
+            <strong>Язык:</strong> {{.Language}}<br>
+            <strong>Код:</strong> {{.Code}}<br>
+    </div>
+{{end}}
+</div>
+<div class="main-container">
+    <button onclick="openModal() ">Добавить Программу</button>
+</div>
+<!-- Модальное окно -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span onclick="closeModal()" style="float: right; cursor: pointer;">&times;</span>
+        <h2>Заполните поля:</h2>
+        <div>
+            <select id="lang" name="lang">
+                <option value="c++">C++</option>
+            </select>
+        </div>
+        <textarea class="textarea" id="name" class="textarea" rows="1" placeholder="Название программы"></textarea><br>
+        <textarea class="textarea" id="code" class="textarea" rows="15" placeholder="Код"></textarea><br>
+        <button onclick="submitForm()">Отправить</button>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    function openModal() {
+        var modal = document.getElementById('myModal');
+        modal.style.display = "block";
+
+        setTimeout(function() {
+            modal.getElementsByClassName('modal-content')[0].classList.add('show');
+        }, 100);
+    }
+
+    function closeModal() {
+        var modal = document.getElementById('myModal');
+        modal.classList.add("fade-out");
+
+        setTimeout(function() {
+            modal.style.display = "none";
+            modal.classList.remove("fade-out");
+        }, 300);
+    }
+
+    function submitForm() {
+        var lang = document.getElementById('lang').value;
+        var code = document.getElementById('code').value;
+        var name = document.getElementById('name').value;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/programs/send");
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send("lang=" + encodeURIComponent(lang) + "&code=" + encodeURIComponent(code) + "&name=" + encodeURIComponent(name));
+
+        closeModal();
+    }
+</script>
+
+
+

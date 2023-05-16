@@ -15,12 +15,12 @@ type repository struct {
 
 func (r repository) Create(ctx context.Context, program program.Program) (string, error) {
 	q := `
-		INSERT INTO program (code, lang, task_id) 
-		VALUES ($1, $2, $3)
+		INSERT INTO program (code, lang, task_id, name) 
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
 		`
 	utils.CheckTaskId(&program)
-	err := r.client.QueryRow(ctx, q, program.Code, program.Lang, program.TaskId).Scan(&program.Id)
+	err := r.client.QueryRow(ctx, q, program.Code, program.Lang, program.TaskId, program.Name).Scan(&program.Id)
 	if err != nil {
 		if pgError, ok := err.(*pgconn.PgError); ok {
 			fmt.Sprintf("SQL Error: %s", pgError.Message)
@@ -31,8 +31,7 @@ func (r repository) Create(ctx context.Context, program program.Program) (string
 }
 
 func (r repository) FindAll(ctx context.Context) ([]program.Program, error) {
-	q := `SELECT id, code, lang, task_id from program`
-	fmt.Println(1)
+	q := `SELECT id, code, lang, task_id, name from program`
 	rows, err := r.client.Query(ctx, q)
 
 	if err != nil {
@@ -43,7 +42,7 @@ func (r repository) FindAll(ctx context.Context) ([]program.Program, error) {
 
 	for rows.Next() {
 		var p program.Program
-		err = rows.Scan(&p.Id, &p.Code, &p.Lang, &p.TaskId)
+		err = rows.Scan(&p.Id, &p.Code, &p.Lang, &p.TaskId, &p.Name)
 		if err != nil {
 			return nil, err
 		}
