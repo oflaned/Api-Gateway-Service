@@ -21,7 +21,7 @@ func (s *CompileService) RunProgram(program []byte) (out string) {
 	req, err := http.NewRequest("POST", "http://localhost:1212/compile", bytes.NewBuffer(program))
 	if err != nil {
 		log.Print(err)
-		return "error: Server Error\n"
+		return "error: compiler are not enable\n"
 	}
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
@@ -36,6 +36,5 @@ func (s *CompileService) RunProgram(program []byte) (out string) {
 		log.Print(err)
 		return "error: Server Error\n"
 	}
-
 	return string(body)
 }

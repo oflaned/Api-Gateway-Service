@@ -21,7 +21,6 @@ func (h *Handler) Compile(c *gin.Context) {
 	if !strings.HasSuffix(input, "\n") {
 		input += "\n"
 	}
-
 	if code == "" {
 		log.Print("Code is empty")
 		c.String(http.StatusOK, "error: Code is empty")
@@ -52,7 +51,15 @@ func (h *Handler) Compile(c *gin.Context) {
 	}
 
 	out := h.services.RunProgram(program)
-	c.String(http.StatusOK, out)
+	if strings.HasPrefix(out, "error:") {
+		c.String(http.StatusOK, out)
+	} else {
+		lines := strings.Split(out, "\n")
+		lines = lines[len(input)/2:]
+		result := strings.Join(lines, "\n")
+		c.String(http.StatusOK, result)
+	}
+
 }
 
 func (h *Handler) Program(c *gin.Context) {
