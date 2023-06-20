@@ -1,19 +1,24 @@
 package service
 
-import "Mehmat/model/program"
+import (
+	"Mehmat/model/mossStatus"
+	"Mehmat/model/program"
+)
 
 type CompileProgram interface {
 	RunProgram(program []byte) (out string)
 }
 
 type Service struct {
-	program.Repository
+	ProgramRep program.Repository
+	StatusRep  mossStatus.Repository
 	CompileProgram
 }
 
-func NewService(rep program.Repository) *Service {
+func NewService(repProgram program.Repository, repStatus mossStatus.Repository) *Service {
 	return &Service{
 		CompileProgram: NewCompileService(),
-		Repository:     rep,
+		ProgramRep:     repProgram,
+		StatusRep:      repStatus,
 	}
 }

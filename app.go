@@ -4,6 +4,8 @@ import (
 	"Mehmat/Api/handler"
 	"Mehmat/Api/service"
 	"Mehmat/config"
+	"Mehmat/model/mossStatus"
+	"Mehmat/model/mossStatus/db"
 	"Mehmat/model/program"
 	programDB "Mehmat/model/program/db"
 	"Mehmat/pkg/client/postgressql"
@@ -13,7 +15,8 @@ import (
 )
 
 func main() {
-	var repository program.Repository
+	var repPrograms program.Repository
+	var repStatus mossStatus.Repository
 	var postgresSQLClient postgressql.Client
 	var err error
 
@@ -26,8 +29,9 @@ func main() {
 		log.Fatalf("Error while create db client")
 	}
 
-	repository = programDB.NewRepository(postgresSQLClient)
-	services := service.NewService(repository)
+	repPrograms = programDB.NewRepository(postgresSQLClient)
+	repStatus = db.NewRepository(postgresSQLClient)
+	services := service.NewService(repPrograms, repStatus)
 	handlers := handler.NewHandler(services)
 
 	server := new(Server)

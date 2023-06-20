@@ -184,19 +184,25 @@
 </div>
 <div class="main-container">
     <button onclick="location.href='/online-compiler'">Онлайн компилятор</button>
-    <button onclick="location.href='/programs'">Антиплагиат кода</button>
+    <button onclick="location.href='/programs'">Программы</button>
+    <button onclick="location.href='/antiplagiat'">Антиплагиат кода</button>
 </div>
 <div class="main-container">
-{{range .blocks}}
+    {{range $index, $block := .blocks}}
     <div class="block">
+        <label>
+            <input type="checkbox" class="checkbox">
+            <span class="checkmark"></span>
+        </label>
             <strong>Название:</strong> {{.Name}}<br>
             <strong>Язык:</strong> {{.Language}}<br>
-            <strong>Код:</strong> {{.Code}}<br>
+            <strong>Date: {{.Date}}</strong>
     </div>
 {{end}}
 </div>
 <div class="main-container">
     <button onclick="openModal() ">Добавить Программу</button>
+    <button onclick="sendData()">Отправить на проверку</button>
 </div>
 <!-- Модальное окно -->
 <div id="myModal" class="modal">
@@ -247,7 +253,41 @@
 
         closeModal();
     }
-</script>
 
+    function sendData() {
+        var checkboxes = document.getElementsByClassName("checkbox");
+        var selectedPrograms = [];
+
+        // Перебираем все флажки и добавляем выбранные программы в массив
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                selectedPrograms.push({ id: i + 1 }); // Здесь можно использовать нужный вам идентификатор программы
+            }
+        }
+
+        // Отправляем POST-запрос с выбранными программами
+        fetch("/antiplagiat/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(selectedPrograms),
+        })
+            .then(function(response) {
+                // Обработка ответа от сервера
+                if (response.ok) {
+                    // Успешный ответ
+                    console.log("Запрос успешно отправлен");
+                } else {
+                    // Ошибка при выполнении запроса
+                    console.log("Ошибка при отправке запроса");
+                }
+            })
+            .catch(function(error) {
+                // Обработка ошибок
+                console.log("Произошла ошибка:", error);
+            });
+    }
+</script>
 
 

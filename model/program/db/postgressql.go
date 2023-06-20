@@ -2,25 +2,26 @@ package programDB
 
 import (
 	"Mehmat/model/program"
-	"Mehmat/model/program/db/utils"
 	"Mehmat/pkg/client/postgressql"
 	"context"
 	"fmt"
 	"github.com/jackc/pgconn"
+	"time"
 )
 
-type repository struct {
+type Repository struct {
 	client postgressql.Client
 }
 
-func (r repository) Create(ctx context.Context, program program.Program) (string, error) {
+func (r Repository) Create(ctx context.Context, program program.Program) (string, error) {
 	q := `
-		INSERT INTO program (code, lang, name) 
-		VALUES ($1, $2, $3)
+		INSERT INTO program (code, lang, name, date) 
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
 		`
-	utils.CheckTaskId(&program)
-	err := r.client.QueryRow(ctx, q, program.Code, program.Lang, program.Name).Scan(&program.Id)
+	currentTime := time.Now() // Получаем текущее время
+
+	err := r.client.QueryRow(ctx, q, program.Code, program.Lang, program.Name, currentTime).Scan(&program.Id)
 	if err != nil {
 		if pgError, ok := err.(*pgconn.PgError); ok {
 			fmt.Sprintf("SQL Error: %s", pgError.Message)
@@ -30,8 +31,8 @@ func (r repository) Create(ctx context.Context, program program.Program) (string
 	return program.Id, nil
 }
 
-func (r repository) FindAll(ctx context.Context) ([]program.Program, error) {
-	q := `SELECT id, code, lang, name from program`
+func (r Repository) FindAll(ctx context.Context) ([]program.Program, error) {
+	q := `SELECT id, code, lang, name, date from program`
 	rows, err := r.client.Query(ctx, q)
 
 	if err != nil {
@@ -42,7 +43,7 @@ func (r repository) FindAll(ctx context.Context) ([]program.Program, error) {
 
 	for rows.Next() {
 		var p program.Program
-		err = rows.Scan(&p.Id, &p.Code, &p.Lang, &p.Name)
+		err = rows.Scan(&p.Id, &p.Code, &p.Lang, &p.Name, &p.Date)
 		if err != nil {
 			return nil, err
 		}
@@ -58,29 +59,48 @@ func (r repository) FindAll(ctx context.Context) ([]program.Program, error) {
 
 }
 
-func (r repository) FindOne(ctx context.Context, id string) (program.Program, error) {
-	q := `SELECT id, code, lang from public.program WHERE id=$1`
+func (r Repository) FindOne(ctx context.Context, id string) (program.Program, error) {
+	q := `SELECT id, code, lang, date from public.program WHERE id=$1`
 
 	var p program.Program
-	err := r.client.QueryRow(ctx, q, id).Scan(&p.Id, &p.Code, &p.Lang)
+	err := r.client.QueryRow(ctx, q, id).Scan(&p.Id, &p.Code, &p.Lang, &p.Date)
 	if err != nil {
 		return p, err
 	}
 	return p, nil
 }
 
-func (r repository) Update(ctx context.Context, p program.Program) error {
-	//TODO implement me
-	panic("implement me")
+func (r Repository) Update(ctx context.Context, p program.Program) error {
+	query := `
+		UPDATE programs
+		SET name = $1, code = $2, lang = $3, date = &4
+		WHERE id = $5
+	`
+
+	_, err := r.client.Exec(ctx, query, p.Name, p.Code, p.Lang, p.Date, p.Id)
+	if err != nil {
+		return fmt.Errorf("failed to update program: %w", err)
+	}
+
+	return nil
 }
 
-func (r repository) Delete(ctx context.Context, id string) error {
-	//TODO implement me
-	panic("implement me")
+func (r Repository) Delete(ctx context.Context, id string) error {
+	query := `
+		DELETE FROM programs
+		WHERE id = $1
+	`
+
+	_, err := r.client.Exec(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete program: %w", err)
+	}
+
+	return nil
 }
 
 func NewRepository(client postgressql.Client) program.Repository {
-	return &repository{
+	return &Repository{
 		client: client,
 	}
 }

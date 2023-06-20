@@ -29,6 +29,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		programsList.GET("", h.ProgramsList)
 		programsList.POST("/send", h.AddProgram)
 	}
+	antiPlagiat := router.Group("/antiplagiat")
+	{
+		antiPlagiat.POST("/send", h.SendToMoss)
+		antiPlagiat.GET("", h.AntiplagiatStatus)
+	}
 	return router
 
 }
